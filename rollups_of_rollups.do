@@ -121,10 +121,11 @@ duplicates drop
 		if addonplatform == "Core Security" & ultimate_platform == "SecureAuth"
 	replace ultimate_platform = "HelpSystems" ///
 		if addonplatform == "SecureAuth" & ultimate_platform == "SecureAuth"
-duplicates tag addonplatform, gen(dup)
-br if dup
-
-
+	duplicates drop
+local N = _N + 1 // missing addonplatform matched to missing ultimate_platform
+set obs `N'
+	
+save "processed-data/layered_rollups_pb.dta", replace
 
 
 

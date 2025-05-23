@@ -8,17 +8,16 @@ Just trying to see what's in the Pitchbook data
 
 
 
-global proj_dir "/Users/laurenmostrom/Dropbox/Personal Document Backup/Booth/Third Year/Rollups"
-global data_dir "/Users/laurenmostrom/Dropbox/PitchBook/UCHICAGO_20220911"
+global proj_dir "/Users/laurenmostrom/Dropbox/Research/Rollups"
+global data_dir "/Users/laurenmostrom/Dropbox/Research/PitchBook/UCHICAGO_20220911"
 global do_dir "/Users/laurenmostrom/Documents/GitHub/rollups"
-
 
 
 cap cd "$data_dir"
 
 * --- Import Data Sets --- *
 import delimited "Deal.csv", clear varn(1)
-keep companyid dealid dealdate dealstatus dealtype dealtype2 dealtype3 ///
+keep companyid dealid dealdate dealstatus dealsynopsis dealtype dealtype2 dealtype3 ///
 	dealclass addon addonsponsor addonplatform sitelocation
 keep if addon == "Yes"
 	
@@ -63,10 +62,20 @@ order dealid dealdate companyid investorid
 
 egen platformid = group(addonplatform)
 
+gen pb_id = _n
+
+gen zipcode = regexs(0) if(regexm(com_hqpostcode, "[0-9][0-9][0-9][0-9][0-9]"))
+	destring zipcode, replace
+
+stnd_compname companyname, ///
+		gen(stn_companyname stn_dbaname stn_fkaname entitytype attn_name) ///
+		patpath("/Users/laurenmostrom/Documents/Stata/ado")
+	drop stn_dbaname stn_fkaname entitytype attn_name
+
 save "processed-data/pitchbook_addons.dta", replace
 export delimited "processed-data/pitchbook_addons.csv", replace
 
-preserve // for geocoding these headuarters
+/*preserve // for geocoding these headuarters
 	keep companyid com_hqaddressline1 com_hqaddressline2 com_hqcity com_hqstate com_hqpostcode
 	gen com_hqaddress = com_hqaddressline1 + " " + com_hqaddressline2
 	drop com_hqaddressline1 com_hqaddressline2
@@ -77,19 +86,4 @@ preserve // for geocoding these headuarters
 			"processed-data/company_addresses_`i'_`j'.csv", replace novarnames
 	}
 restore
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+*/
